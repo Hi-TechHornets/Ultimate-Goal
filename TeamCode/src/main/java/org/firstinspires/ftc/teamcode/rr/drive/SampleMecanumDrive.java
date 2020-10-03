@@ -56,7 +56,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(1, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 30.0/27.0;
+    public static double LATERAL_MULTIPLIER = 60.0/57.0;
 
     public enum Mode {
         IDLE,
@@ -125,7 +125,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "3rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "2rightFront");
 
-        arm = hardwareMap.get(Servo.class, "foundation");
+//        arm = hardwareMap.get(Servo.class, "foundation");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

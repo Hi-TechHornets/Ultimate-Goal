@@ -38,7 +38,6 @@ import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.kV;
  * ctor.
  */
 @Config
-@Disabled
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
@@ -140,7 +139,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         NanoClock clock = NanoClock.system();
 
-        drive.arm.setPosition(0.2);
+//        drive.arm.setPosition(0.2);
 
         telemetry.addLine("Ready!");
         telemetry.update();
