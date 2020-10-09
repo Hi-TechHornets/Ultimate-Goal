@@ -79,7 +79,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<Pose2d> poseHistory;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    public Servo arm;
+    public  DcMotor wobbleArm;
+    public Servo wobbleClaw;
     private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
@@ -125,7 +126,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "3rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "2rightFront");
 
-//        arm = hardwareMap.get(Servo.class, "foundation");
+        wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
+
+        wobbleArm = hardwareMap.get(DcMotor.class, "wobbleArm");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -140,6 +143,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        wobbleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);

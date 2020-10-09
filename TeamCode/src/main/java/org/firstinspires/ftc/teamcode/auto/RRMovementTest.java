@@ -17,7 +17,7 @@ public class RRMovementTest extends LinearOpMode {
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        drive.arm.setPosition(0.2);
+//        drive.arm.setPosition(0.2);
 
         Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
                 .splineToConstantHeading(new Vector2d(30, 20), Math.toRadians(0))

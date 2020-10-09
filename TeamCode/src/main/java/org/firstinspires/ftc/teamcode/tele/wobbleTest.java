@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.robotControl;
@@ -37,6 +38,11 @@ public class wobbleTest extends LinearOpMode {
             telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         }
 
+        tbd.wobbleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tbd.wobbleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        tbd.wobbleClaw.setPosition(wobbleClawClose);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -55,14 +61,15 @@ public class wobbleTest extends LinearOpMode {
                                 Range.clip(pwr + x + z, -1, 1));
 
             if(clawState.output()) {
-                tbd.wobbleClaw.setPosition(wobbleClawClose);
+                tbd.wobbleClaw.setPosition(wobbleClawOpen);
             }
             else {
-                tbd.wobbleClaw.setPosition(wobbleClawOpen);
+                tbd.wobbleClaw.setPosition(wobbleClawClose);
             }
 
             tbd.wobbleArm.setPower(a * 0.4);
 
+            telemetry.addData("Motor position", tbd.wobbleArm.getCurrentPosition());
             telemetry.update();
         }
     }

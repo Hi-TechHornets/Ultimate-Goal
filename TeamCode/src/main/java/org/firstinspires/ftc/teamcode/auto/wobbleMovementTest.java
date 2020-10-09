@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -41,9 +42,14 @@ public class wobbleMovementTest extends LinearOpMode {
 
     public static int result = 0;
 
+    public static double wobbleClawOpen = 1.0;
+    public static double wobbleClawClose = 0.05;
+
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.wobbleClaw.setPosition(wobbleClawClose);
 
         initVuforia();
 
@@ -87,6 +93,7 @@ public class wobbleMovementTest extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(60.5, -48.0), Math.toRadians(0.0))
                 .build();
 
+
         telemetry.addData(">", "Press Play to begin autonomous");
         telemetry.update();
 
@@ -108,14 +115,38 @@ public class wobbleMovementTest extends LinearOpMode {
             switch(result) {
                 case 0:
                     drive.followTrajectory(zero);
+
+                    moveWobbleArm(drive, 0.4, -380);
+
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(150);
+
+                    moveWobbleArm(drive, 0.4, 380);
+
                     break;
                 case 1:
                     drive.followTrajectory(one);
                     drive.turn(Math.toRadians(180.0));
+
+                    moveWobbleArm(drive, 0.4, -380);
+
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(150);
+
+                    moveWobbleArm(drive, 0.4, 380);
+
                     drive.followTrajectory(returnToBaseline(new Pose2d(one.end().getX(), one.end().getY(), Math.toRadians(180.0)), drive));
                     break;
                 case 4:
                     drive.followTrajectory(four);
+
+                    moveWobbleArm(drive, 0.4, -380);
+
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(150);
+
+                    moveWobbleArm(drive, 0.4, 380);
+
                     drive.followTrajectory(returnToBaseline(four.end(), drive));
                     break;
                 default:
@@ -159,5 +190,25 @@ public class wobbleMovementTest extends LinearOpMode {
 
     public Trajectory returnToBaseline(Pose2d endPoint, SampleMecanumDrive drive) {
         return drive.trajectoryBuilder(endPoint).lineToConstantHeading(new Vector2d(12.0, -48.0)).build();
+    }
+
+    public void moveWobbleArm(SampleMecanumDrive drive, double power, int distance) {
+        drive.wobbleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        drive.wobbleArm.setTargetPosition(distance);
+
+        drive.wobbleArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        drive.wobbleArm.setPower(power);
+
+        while(drive.wobbleArm.isBusy()) {
+            telemetry.addData("Motor position", drive.wobbleArm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        drive.wobbleArm.setPower(0.0);
+
+        drive.wobbleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

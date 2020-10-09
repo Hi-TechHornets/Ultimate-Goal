@@ -455,6 +455,8 @@ public class FtcRobotControllerActivity extends Activity
     PreferenceRemoterRC.getInstance().stop(prefRemoterStartResult);
     DeviceNameManagerFactory.getInstance().stop(deviceNameStartResult);
 
+    FtcDashboard.stop();
+
     unbindFromService();
     // If the app manually (?) is stopped, then we don't need the auto-starting function (?)
     ServiceController.stopService(FtcRobotControllerWatchdogService.class);
@@ -462,8 +464,6 @@ public class FtcRobotControllerActivity extends Activity
     if (preferencesHelper != null) preferencesHelper.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
 
     RobotLog.cancelWriteLogcatToDisk();
-
-    FtcDashboard.stop();
   }
 
   protected void bindToService() {
@@ -740,7 +740,9 @@ public class FtcRobotControllerActivity extends Activity
     //
     RobotLog.clearGlobalErrorMsg();
     RobotLog.clearGlobalWarningMsg();
+    FtcDashboard.stop();
     shutdownRobot();
+    FtcDashboard.start();
     requestRobotSetup(new Runnable() {
       @Override public void run() {
         showRestartRobotCompleteToast(R.string.toastRestartRobotComplete);
