@@ -26,6 +26,11 @@ public class robotControl {
 
     public DcMotor wobbleArm;
 
+    public DcMotor rightWheel;
+//    public DcMotor leftWheel;
+
+//    public DcMotor rack;
+
     // Servos (Servo)
 
     public Servo wobbleClaw;
@@ -45,6 +50,13 @@ public class robotControl {
         rightRear = hardwareMap.dcMotor.get("3rightRear");
 
         wobbleArm = hardwareMap.dcMotor.get("wobbleArm");
+
+        rightWheel = hardwareMap.dcMotor.get("rightWheel");
+//        leftWheel = hardwareMap.dcMotor.get("leftWheel");
+
+//        rack = hardwareMap.dcMotor.get("rack");
+
+
         // Direction: variable.setDirection(DcMotor.Direction.REVERSE);
 
         rightFront.setDirection(DcMotor.Direction.REVERSE);
@@ -58,6 +70,11 @@ public class robotControl {
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         wobbleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        rightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        leftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+//        rack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Servos: variable = hardwareMap.servo.get("name");
         wobbleClaw = hardwareMap.servo.get("wobbleClaw");
