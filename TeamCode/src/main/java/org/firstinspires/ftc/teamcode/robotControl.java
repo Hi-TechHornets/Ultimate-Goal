@@ -26,7 +26,11 @@ public class robotControl {
 
     public DcMotor wobbleArm;
 
-    public DcMotor rightWheel;
+    public DcMotor intake;
+
+    public DcMotor shooter;
+
+ //   public DcMotor rightWheel;
 //    public DcMotor leftWheel;
 
 //    public DcMotor rack;
@@ -34,6 +38,7 @@ public class robotControl {
     // Servos (Servo)
 
     public Servo wobbleClaw;
+    public Servo flicker;
 
     // Other
     public ElapsedTime timer = new ElapsedTime();
@@ -51,7 +56,11 @@ public class robotControl {
 
         wobbleArm = hardwareMap.dcMotor.get("wobbleArm");
 
-        rightWheel = hardwareMap.dcMotor.get("rightWheel");
+        intake = hardwareMap.dcMotor.get("intake");
+
+        shooter = hardwareMap.dcMotor.get("shooter");
+
+  //      rightWheel = hardwareMap.dcMotor.get("rightWheel");
 //        leftWheel = hardwareMap.dcMotor.get("leftWheel");
 
 //        rack = hardwareMap.dcMotor.get("rack");
@@ -71,13 +80,18 @@ public class robotControl {
 
         wobbleArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        rightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+   //     rightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 //        leftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 //        rack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Servos: variable = hardwareMap.servo.get("name");
         wobbleClaw = hardwareMap.servo.get("wobbleClaw");
+        flicker = hardwareMap.servo.get("flicker");
     }
 
     public void moveDriveMotors(double power) {
