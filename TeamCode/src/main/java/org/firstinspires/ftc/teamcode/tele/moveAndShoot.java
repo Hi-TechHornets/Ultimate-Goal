@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tele;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robotControl;
 import org.firstinspires.ftc.teamcode.util.ToggleBoolean;
 
 @TeleOp
+@Config
 public class moveAndShoot extends LinearOpMode {
     private robotControl tbd;
 
@@ -26,6 +28,8 @@ public class moveAndShoot extends LinearOpMode {
     public static double flickClose = 0.62;
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
+
+    public static double shooterPower = -0.62;
 
     public ToggleBoolean flickState;
     public ToggleBoolean shootState;
@@ -83,7 +87,7 @@ public class moveAndShoot extends LinearOpMode {
             }
 
             if(shootState.output()) {
-                tbd.shooter.setPower(1.0);
+                tbd.shooter.setPower(shooterPower);
             }
             else {
                 tbd.shooter.setPower(0.0);

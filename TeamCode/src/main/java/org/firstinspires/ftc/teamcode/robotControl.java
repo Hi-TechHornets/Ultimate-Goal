@@ -162,4 +162,48 @@ public class robotControl {
 
         return result;
     }
-}
+
+    public static int detectRingsConfidence(TFObjectDetector tfod, MultipleTelemetry telemetry) {
+        int result = -1;
+
+        int i = 0;
+        while(true) {
+            if (tfod != null) {
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData("Confidence", recognition.getConfidence());
+                        if (recognition.getLabel().equals("Quad") && updatedRecognitions.size() >= 1) {
+                            telemetry.addData("Detected", "4");
+                            if(recognition.getConfidence() >= 0.9 || i >= 15) {
+                                result = 4;
+                            }
+                        } else if (recognition.getLabel().equals("Single") && updatedRecognitions.size() == 1 && recognition.getConfidence() > 0.9) {
+                            telemetry.addData("Detected", "1");
+                            if(recognition.getConfidence() >= 0.9 || i >= 15) {
+                                result = 1;
+                            }
+                        }
+                    }
+                    if (updatedRecognitions.size() == 0) {
+                        telemetry.addData("Detected", "none");
+                        if(i >= 15) {
+                            result = 0;
+                        }
+                    }
+                    i++;
+                    telemetry.addData("i", i);
+                    telemetry.addData("result", result);
+                    telemetry.update();
+
+                    if (result != -1) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result;
+        }
+    }

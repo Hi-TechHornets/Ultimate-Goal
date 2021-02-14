@@ -34,16 +34,20 @@ public class twoWobbleAuto extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private Trajectory goToRings, zero, one, four, getSecondWobbleZero, deliverSecondWobbleZero,
-            getSecondWobbleOne, deliverSecondWobbleOne, getSecondWabbleFour, deliverSecondWobbleFour;
+            getSecondWobbleOne, deliverSecondWobbleOne, getSecondWobbleFour, deliverSecondWobbleFour;
 
     public static int result = 0;
 
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
 
+    public static int wobbleArmDistance = 420;
+
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.wobbleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         drive.wobbleClaw.setPosition(wobbleClawClose);
 
@@ -70,12 +74,11 @@ public class twoWobbleAuto extends LinearOpMode {
                 .build();
 
         zero = drive.trajectoryBuilder(goToRings.end())
-                .lineToConstantHeading(new Vector2d(12.0, -55.0))
+                .lineToConstantHeading(new Vector2d(9.0, -49.0))
                 .build();
 
         one = drive.trajectoryBuilder(goToRings.end())
-                .lineToConstantHeading(new Vector2d(12.0, -45.0))
-                .splineToConstantHeading(new Vector2d(39.0, -45.0), Math.toRadians(0.0))
+                .lineToConstantHeading(new Vector2d(41.0, -27.0))
                 .build();
 
         four = drive.trajectoryBuilder(goToRings.end())
@@ -84,28 +87,29 @@ public class twoWobbleAuto extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(63.0, -55.0), Math.toRadians(0.0))
                 .build();
 
-        getSecondWobbleZero = drive.trajectoryBuilder(zero.end())
-                .lineToConstantHeading(new Vector2d(-50.0, -40.0))
+        getSecondWobbleZero = drive.trajectoryBuilder(new Pose2d(zero.end().getX(), zero.end().getY(), Math.toRadians(0.0)))
+                .lineToConstantHeading(new Vector2d(-12.0, -50.0))
+                .splineToConstantHeading(new Vector2d(-54.0, -20.0), Math.toRadians(180.0))
+                //.lineToLinearHeading(new Pose2d(-54.0, -40.0, Math.toRadians(180.0)))
                 .build();
 
         deliverSecondWobbleZero = drive.trajectoryBuilder(getSecondWobbleZero.end())
-                .lineToConstantHeading(new Vector2d(12.0, -44.0))
+                .lineToConstantHeading(new Vector2d(12.0, -48.0))
                 .build();
 
         getSecondWobbleOne = drive.trajectoryBuilder(one.end())
-                .lineToConstantHeading(new Vector2d(-50.0, -40.0))
+                .lineToConstantHeading(new Vector2d(-48.0, -12.0))
                 .build();
 
         deliverSecondWobbleOne = drive.trajectoryBuilder(getSecondWobbleOne.end())
-                .lineToConstantHeading(new Vector2d(12.0, -53.0))
-                .splineToConstantHeading(new Vector2d(33.5, -53.0), Math.toRadians(0.0))
+                .lineToConstantHeading(new Vector2d(35.0, -20.0))
                 .build();
 
-        getSecondWabbleFour = drive.trajectoryBuilder(four.end())
+        getSecondWobbleFour = drive.trajectoryBuilder(four.end())
                 .lineToConstantHeading(new Vector2d(-50.0, -40.0))
                 .build();
 
-        deliverSecondWobbleFour = drive.trajectoryBuilder(getSecondWabbleFour.end())
+        deliverSecondWobbleFour = drive.trajectoryBuilder(getSecondWobbleFour.end())
                 .lineToConstantHeading(new Vector2d(12.0, -42.0))
                 .splineToConstantHeading(new Vector2d(33.5, -42.0), Math.toRadians(0.0))
                 .splineToConstantHeading(new Vector2d(60.5, -42.0), Math.toRadians(0.0))
@@ -132,70 +136,71 @@ public class twoWobbleAuto extends LinearOpMode {
             switch(result) {
                 case 0:
                     drive.followTrajectory(zero);
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
-                    sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
+                    sleep(300);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+                    drive.turn(Math.toRadians(180.0));
 
                     drive.followTrajectory(getSecondWobbleZero);
-                    drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, -380);
-                    sleep(150);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
                     drive.wobbleClaw.setPosition(wobbleClawClose);
-                    sleep(100);
-                    moveWobbleArm(drive, 0.4, 380);
+                    sleep(600);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(deliverSecondWobbleZero);
                     drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
                     break;
                 case 1:
                     drive.followTrajectory(one);
-                    drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
-                    sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
+                    sleep(300);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(getSecondWobbleOne);
-                    moveWobbleArm(drive, 0.4, -380);
-                    sleep(150);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
                     drive.wobbleClaw.setPosition(wobbleClawClose);
-                    sleep(100);
-                    moveWobbleArm(drive, 0.4, 380);
+                    sleep(600);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(deliverSecondWobbleOne);
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(returnToBaseline(deliverSecondWobbleOne.end(), drive));
                     break;
                 case 4:
                     drive.followTrajectory(four);
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, 380);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
-
-                    drive.followTrajectory(getSecondWabbleFour);
-                    drive.turn(Math.toRadians(180.0));
                     moveWobbleArm(drive, 0.4, -380);
+
+                    drive.followTrajectory(getSecondWobbleFour);
+                    drive.turn(Math.toRadians(180.0));
+                    moveWobbleArm(drive, 0.4, 380);
                     sleep(150);
                     drive.wobbleClaw.setPosition(wobbleClawClose);
                     sleep(100);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, -380);
 
                     drive.followTrajectory(deliverSecondWobbleFour);
                     drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, 380);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, -380);
 
                     drive.followTrajectory(returnToBaseline(deliverSecondWobbleFour.end(), drive));
                     break;

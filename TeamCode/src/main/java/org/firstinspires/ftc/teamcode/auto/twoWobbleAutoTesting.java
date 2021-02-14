@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -21,7 +20,7 @@ import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 
 @Autonomous
 @Config
-public class oneWobbleAuto extends LinearOpMode {
+public class twoWobbleAutoTesting extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
@@ -34,19 +33,36 @@ public class oneWobbleAuto extends LinearOpMode {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private Trajectory goToRings;
-    private Trajectory zero;
-    private Trajectory one;
-    private Trajectory four;
+    private Trajectory goToRings, zero, one, four, getWobbleZero, deliverWobbleZero,
+            getWobbleOne, deliverWobbleOne, getWobbleFour, deliverWobbleFour;
 
     public static int result = 0;
 
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
 
+    public static int wobbleArmDistance = 420;
+
+    public static Vector2d goToRingsV1         = new Vector2d(-23.0, -58.0);
+    public static Vector2d zeroV1              = new Vector2d(9.0, -50.0);
+    public static Vector2d oneV1               = new Vector2d(41.0, -27.0);
+    public static Vector2d fourV1              = new Vector2d(19.0, -42.0);
+    public static Vector2d fourV2              = new Vector2d(36.5, -55.0);
+    public static Vector2d fourV3              = new Vector2d(63.0, -55.0);
+    public static Vector2d getWobbleZeroV1     = new Vector2d(-47.0, -11.0);
+    public static Vector2d deliverWobbleZeroV1 = new Vector2d(14.0, -46.0);
+    public static Vector2d getWobbleOneV1      = new Vector2d(-48.0, -12.0);
+    public static Vector2d deliverWobbleOneV1  = new Vector2d(35.0, -20.0);
+    public static Vector2d getWobbleFourV1     = new Vector2d(-50.0, -40.0);
+    public static Vector2d deliverWobbleFourV1 = new Vector2d(12.0, -42.0);
+    public static Vector2d deliverWobbleFourV2 = new Vector2d(33.5, -42.0);
+    public static Vector2d deliverWobbleFourV3 = new Vector2d(60.5, -42.0);
+
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.wobbleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         drive.wobbleClaw.setPosition(wobbleClawClose);
 
@@ -68,30 +84,49 @@ public class oneWobbleAuto extends LinearOpMode {
         Pose2d startPose = new Pose2d(-63.0, -50.0, Math.toRadians(0.0));
 
         drive.setPoseEstimate(startPose);
-        goToRings = drive.trajectoryBuilder(startPose)
-//                .lineToSplineHeading(new Pose2d(-23.0, -50.0, Math.toRadians(180.0)))
-//                .forward(40.0)
-                .lineToLinearHeading(new Pose2d(-23.0, -58.0, Math.toRadians(0.0))) // -23.0, -53.0
-                .build();
+        goToRings = drive.trajectoryBuilder(startPose).lineToConstantHeading(goToRingsV1).build();
+        // -23.0, -53.0
 
-        zero = drive.trajectoryBuilder(goToRings.end())
-//                .lineToSplineHeading(new Pose2d(12.0, -48.0, Math.toRadians(180.0)))
-                .lineToConstantHeading(new Vector2d(12.0, -48.0))
-                .build();
+        zero = drive.trajectoryBuilder(goToRings.end()).lineToConstantHeading(zeroV1).build();
 
-        one = drive.trajectoryBuilder(goToRings.end())
-                .lineToConstantHeading(new Vector2d(12.0, -48.0))
-                .splineToConstantHeading(new Vector2d(36.5, -48.0), Math.toRadians(0.0))
-//                .splineToConstantHeading(new Vector2d(36.5, -48.0), Math.toRadians(0.0))
-                .build();
+        one = drive.trajectoryBuilder(goToRings.end()).lineToConstantHeading(oneV1).build();
 
         four = drive.trajectoryBuilder(goToRings.end())
-                .lineToConstantHeading(new Vector2d(12.0, -48.0))
-                .splineToConstantHeading(new Vector2d(36.5, -48.0), Math.toRadians(0.0))
-//                .splineToSplineHeading(new Pose2d(60.5, -48.0, Math.toRadians(180.0), Math.toRadians(0.0))
-                .splineToConstantHeading(new Vector2d(60.5, -48.0), Math.toRadians(0.0))
+                .lineToConstantHeading(fourV1)
+                .splineToConstantHeading(fourV2, Math.toRadians(0.0))
+                .splineToConstantHeading(fourV3, Math.toRadians(0.0)).build();
+
+
+
+        getWobbleZero = drive.trajectoryBuilder(new Pose2d(zero.end().getX(), zero.end().getY(), Math.toRadians(0.0)))
+                .splineToConstantHeading(getWobbleZeroV1, Math.toRadians(180.0))
                 .build();
 
+        deliverWobbleZero = drive.trajectoryBuilder(getWobbleZero.end())
+                .lineToConstantHeading(deliverWobbleZeroV1)
+                .build();
+
+
+
+        getWobbleOne = drive.trajectoryBuilder(one.end())
+                .lineToConstantHeading(getWobbleOneV1)
+                .build();
+
+        deliverWobbleOne = drive.trajectoryBuilder(getWobbleOne.end())
+                .lineToConstantHeading(deliverWobbleOneV1)
+                .build();
+
+
+
+        getWobbleFour = drive.trajectoryBuilder(four.end())
+                .lineToConstantHeading(getWobbleFourV1)
+                .build();
+
+        deliverWobbleFour = drive.trajectoryBuilder(getWobbleFour.end())
+                .lineToConstantHeading(deliverWobbleFourV1)
+                .splineToConstantHeading(deliverWobbleFourV2, Math.toRadians(0.0))
+                .splineToConstantHeading(deliverWobbleFourV3, Math.toRadians(0.0))
+                .build();
 
         telemetry.addData(">", "Press Play to begin autonomous");
         telemetry.update();
@@ -105,7 +140,7 @@ public class oneWobbleAuto extends LinearOpMode {
             sleep(500);
 
             if(tfod != null) {
-                result = robotControl.detectRings(tfod, (MultipleTelemetry) telemetry);
+                result = robotControl.detectRingsConfidence(tfod, (MultipleTelemetry) telemetry);
             }
 
             telemetry.addData("Scan complete", result);
@@ -114,19 +149,47 @@ public class oneWobbleAuto extends LinearOpMode {
             switch(result) {
                 case 0:
                     drive.followTrajectory(zero);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(100);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
-                    sleep(150);
-                    moveWobbleArm(drive, 0.4, -380);
+                    sleep(200);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+
+                    drive.followTrajectory(getWobbleZero);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(300);
+                    drive.wobbleClaw.setPosition(wobbleClawClose);
+                    sleep(500);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+
+                    drive.followTrajectory(deliverWobbleZero);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(100);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
                     break;
                 case 1:
                     drive.followTrajectory(one);
-                    drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(300);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+
+                    drive.followTrajectory(getWobbleOne);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                    sleep(400);
+                    drive.wobbleClaw.setPosition(wobbleClawClose);
+                    sleep(600);
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+
+                    drive.followTrajectory(deliverWobbleOne);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, -380);
-                    drive.followTrajectory(returnToBaseline(new Pose2d(one.end().getX(), one.end().getY(), Math.toRadians(180.0)), drive));
+                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+
+                    drive.followTrajectory(returnToBaseline(deliverWobbleOne.end(), drive));
                     break;
                 case 4:
                     drive.followTrajectory(four);
@@ -134,7 +197,23 @@ public class oneWobbleAuto extends LinearOpMode {
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
                     moveWobbleArm(drive, 0.4, -380);
-                    drive.followTrajectory(returnToBaseline(four.end(), drive));
+
+                    drive.followTrajectory(getWobbleFour);
+                    drive.turn(Math.toRadians(180.0));
+                    moveWobbleArm(drive, 0.4, 380);
+                    sleep(150);
+                    drive.wobbleClaw.setPosition(wobbleClawClose);
+                    sleep(100);
+                    moveWobbleArm(drive, 0.4, -380);
+
+                    drive.followTrajectory(deliverWobbleFour);
+                    drive.turn(Math.toRadians(180.0));
+                    moveWobbleArm(drive, 0.4, 380);
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                    sleep(150);
+                    moveWobbleArm(drive, 0.4, -380);
+
+                    drive.followTrajectory(returnToBaseline(deliverWobbleFour.end(), drive));
                     break;
                 default:
                     drive.followTrajectory(returnToBaseline(goToRings.end(), drive));
@@ -176,7 +255,7 @@ public class oneWobbleAuto extends LinearOpMode {
     }
 
     public Trajectory returnToBaseline(Pose2d endPoint, SampleMecanumDrive drive) {
-        return drive.trajectoryBuilder(endPoint).lineToConstantHeading(new Vector2d(12.0, -48.0)).build();
+        return drive.trajectoryBuilder(endPoint).lineToConstantHeading(new Vector2d(12.0, endPoint.getY())).build();
     }
 
     public void moveWobbleArm(SampleMecanumDrive drive, double power, int distance) {
