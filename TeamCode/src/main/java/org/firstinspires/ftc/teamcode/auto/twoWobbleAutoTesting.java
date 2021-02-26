@@ -34,14 +34,21 @@ public class twoWobbleAutoTesting extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private Trajectory goToRings, zero, one, four, getWobbleZero, deliverWobbleZero,
-            getWobbleOne, deliverWobbleOne, getWobbleFour, deliverWobbleFour;
+            getWobbleOne, deliverWobbleOne, getWobbleFour, deliverWobbleFour, shootPosZero, endLineZero;
 
     public static int result = 0;
+
+    private double elapsed = 0.0;
+    private long start = 0L;
 
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
 
     public static int wobbleArmDistance = 420;
+
+    public static double shooterPower = -0.68;
+    public static double flickOpen = 0.85;
+    public static double flickClose = 0.62;
 
     public static Vector2d goToRingsV1         = new Vector2d(-23.0, -58.0);
     public static Vector2d zeroV1              = new Vector2d(9.0, -50.0);
@@ -57,6 +64,9 @@ public class twoWobbleAutoTesting extends LinearOpMode {
     public static Vector2d deliverWobbleFourV1 = new Vector2d(12.0, -42.0);
     public static Vector2d deliverWobbleFourV2 = new Vector2d(33.5, -42.0);
     public static Vector2d deliverWobbleFourV3 = new Vector2d(60.5, -42.0);
+    public static Vector2d endLineV1 = new Vector2d(14.0, -39.0);
+
+    public static Vector2d highGoalPos = new Vector2d(0.0, -39.0);
 
     @Override
     public void runOpMode() {
@@ -98,12 +108,20 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
 
 
-        getWobbleZero = drive.trajectoryBuilder(new Pose2d(zero.end().getX(), zero.end().getY(), Math.toRadians(0.0)))
+        getWobbleZero = drive.trajectoryBuilder(new Pose2d(zero.end().getX(), zero.end().getY(), Math.toRadians(0.0)), Math.toRadians(90.0))
                 .splineToConstantHeading(getWobbleZeroV1, Math.toRadians(180.0))
                 .build();
 
         deliverWobbleZero = drive.trajectoryBuilder(getWobbleZero.end())
                 .lineToConstantHeading(deliverWobbleZeroV1)
+                .build();
+
+        shootPosZero = drive.trajectoryBuilder(deliverWobbleZero.end())
+                .lineToConstantHeading(highGoalPos)
+                .build();
+
+        endLineZero = drive.trajectoryBuilder(new Pose2d(shootPosZero.end().getX(), zero.end().getY(), Math.toRadians(170.0)))
+                .lineToConstantHeading(endLineV1)
                 .build();
 
 
@@ -134,6 +152,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
         waitForStart();
 
         if(running()) {
+            start = System.currentTimeMillis();
 
             drive.followTrajectory(goToRings);
 
@@ -166,7 +185,35 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(100);
-                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
+                    moveWobbleArm(drive, 0.4, -(wobbleArmDistance/2));
+
+                    drive.followTrajectory(shootPosZero);
+                    // shoot
+                    // prime shooting wheel
+                    drive.turn(Math.toRadians(170.0));
+                    drive.shooter.setPower(shooterPower);
+                    sleep(1200);
+
+                    elapsed = (System.currentTimeMillis() - start) / 1000.0;
+                    if(elapsed >= 29.0) {
+                        drive.shooter.setPower(0.0);
+                        // put arm down plz
+                    }
+                    // move servo back and forth fast
+                    for(int i = 0; i < 3; i++) {
+                        drive.flicker.setPosition(flickOpen);
+                        sleep(250);
+                        if(elapsed >= 29.0) {
+                            drive.shooter.setPower(0.0);
+                            // put arm down plz
+                            break;
+                        }
+                        drive.flicker.setPosition(flickClose);
+                        sleep(250);
+                    }
+                    drive.shooter.setPower(0.0);
+
+                    drive.followTrajectory(endLineZero);
                     break;
                 case 1:
                     drive.followTrajectory(one);
