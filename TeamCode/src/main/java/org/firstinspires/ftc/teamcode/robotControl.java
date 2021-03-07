@@ -17,6 +17,8 @@ import java.util.List;
 public class robotControl {
     // Define hardware variables here
 
+    public BNO055IMU imu;
+
     // Motors (DcMotor)
 
     public DcMotor leftFront;
@@ -47,6 +49,11 @@ public class robotControl {
 
     public void init(HardwareMap ahwMap) {
         hardwareMap = ahwMap;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
 
         // Motors: variable = hardwareMap.dcMotor.get("name");
         leftFront = hardwareMap.dcMotor.get("0leftFront");
@@ -176,12 +183,12 @@ public class robotControl {
                         telemetry.addData("Confidence", recognition.getConfidence());
                         if (recognition.getLabel().equals("Quad") && updatedRecognitions.size() >= 1) {
                             telemetry.addData("Detected", "4");
-                            if(recognition.getConfidence() >= 0.9 || i >= 15) {
+                            if(recognition.getConfidence() >= 0.80 || i >= 15) {
                                 result = 4;
                             }
                         } else if (recognition.getLabel().equals("Single") && updatedRecognitions.size() == 1 && recognition.getConfidence() > 0.9) {
                             telemetry.addData("Detected", "1");
-                            if(recognition.getConfidence() >= 0.9 || i >= 15) {
+                            if(recognition.getConfidence() >= 0.80 || i >= 15) {
                                 result = 1;
                             }
                         }

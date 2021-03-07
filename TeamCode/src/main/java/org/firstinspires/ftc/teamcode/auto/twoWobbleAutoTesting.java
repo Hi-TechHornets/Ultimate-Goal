@@ -34,7 +34,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private Trajectory goToRings, zero, one, four, getWobbleZero, deliverWobbleZero,
-            getWobbleOne, deliverWobbleOne, getWobbleFour, deliverWobbleFour, shootPosZero, endLineZero;
+            getWobbleOne, deliverWobbleOne, getWobbleFour, deliverWobbleFour, shootPosZero,
+            endLineZero, shootPosOne, endLineOne, shootPosFour, endLineFour;
 
     public static int result = 0;
 
@@ -52,21 +53,24 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
     public static Vector2d goToRingsV1         = new Vector2d(-23.0, -58.0);
     public static Vector2d zeroV1              = new Vector2d(9.0, -50.0);
-    public static Vector2d oneV1               = new Vector2d(41.0, -27.0);
+    public static Vector2d oneV1               = new Vector2d(38.0, -43.0);
     public static Vector2d fourV1              = new Vector2d(19.0, -42.0);
     public static Vector2d fourV2              = new Vector2d(36.5, -55.0);
-    public static Vector2d fourV3              = new Vector2d(63.0, -55.0);
+    public static Vector2d fourV3              = new Vector2d(60.0, -49.0);
     public static Vector2d getWobbleZeroV1     = new Vector2d(-47.0, -11.0);
     public static Vector2d deliverWobbleZeroV1 = new Vector2d(14.0, -46.0);
     public static Vector2d getWobbleOneV1      = new Vector2d(-48.0, -12.0);
     public static Vector2d deliverWobbleOneV1  = new Vector2d(35.0, -20.0);
+    public static Vector2d oneLineV1           = new Vector2d(14.0, -20.0);
     public static Vector2d getWobbleFourV1     = new Vector2d(-50.0, -40.0);
     public static Vector2d deliverWobbleFourV1 = new Vector2d(12.0, -42.0);
     public static Vector2d deliverWobbleFourV2 = new Vector2d(33.5, -42.0);
     public static Vector2d deliverWobbleFourV3 = new Vector2d(60.5, -42.0);
+    public static Vector2d fourLineV1          = new Vector2d(14.0, -17.0);
     public static Vector2d endLineV1 = new Vector2d(14.0, -39.0);
 
     public static Vector2d highGoalPos = new Vector2d(0.0, -39.0);
+    public static Vector2d powerShotPos = new Vector2d(-10.0, -17.0);
 
     @Override
     public void runOpMode() {
@@ -102,8 +106,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
         one = drive.trajectoryBuilder(goToRings.end()).lineToConstantHeading(oneV1).build();
 
         four = drive.trajectoryBuilder(goToRings.end())
-                .lineToConstantHeading(fourV1)
-                .splineToConstantHeading(fourV2, Math.toRadians(0.0))
+//                .lineToConstantHeading(fourV1)
+//                .splineToConstantHeading(fourV2, Math.toRadians(0.0))
                 .splineToConstantHeading(fourV3, Math.toRadians(0.0)).build();
 
 
@@ -120,18 +124,36 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                 .lineToConstantHeading(highGoalPos)
                 .build();
 
-        endLineZero = drive.trajectoryBuilder(new Pose2d(shootPosZero.end().getX(), zero.end().getY(), Math.toRadians(170.0)))
+        endLineZero = drive.trajectoryBuilder(new Pose2d(shootPosZero.end().getX(), shootPosZero.end().getY(), Math.toRadians(170.0)))
                 .lineToConstantHeading(endLineV1)
                 .build();
 
 
 
-        getWobbleOne = drive.trajectoryBuilder(one.end())
-                .lineToConstantHeading(getWobbleOneV1)
+        getWobbleOne = drive.trajectoryBuilder(goToRings.end())
+                .addSpatialMarker(new Vector2d(37.0, -47.0), () -> {
+                    moveWobbleArm(drive, 0.4, (wobbleArmDistance / 2) + 40);
+                })
+                .splineToConstantHeading(oneV1, Math.toRadians(90.0))
+                .addSpatialMarker(new Vector2d(38.0, -27.0), () -> {
+                    drive.wobbleClaw.setPosition(wobbleClawOpen);
+                })
+//                .addSpatialMarker(new Vector2d(0.0, -20.0), () -> {
+//                    moveWobbleArm(drive, 0.4, (wobbleArmDistance / 2) - 40);
+//                })
+                .splineToConstantHeading(getWobbleOneV1, Math.toRadians(180.0))
                 .build();
 
         deliverWobbleOne = drive.trajectoryBuilder(getWobbleOne.end())
                 .lineToConstantHeading(deliverWobbleOneV1)
+                .build();
+
+        shootPosOne = drive.trajectoryBuilder(deliverWobbleOne.end(), Math.toRadians(160.0))
+                .splineToConstantHeading(highGoalPos, Math.toRadians(200.0))
+                .build();
+
+        endLineOne = drive.trajectoryBuilder(new Pose2d(shootPosOne.end().getX(), shootPosOne.end().getY(), Math.toRadians(170.0)))
+                .lineToConstantHeading(oneLineV1)
                 .build();
 
 
@@ -140,10 +162,18 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                 .lineToConstantHeading(getWobbleFourV1)
                 .build();
 
+        shootPosFour = drive.trajectoryBuilder(four.end())
+                .lineToConstantHeading(powerShotPos)
+                .build();
+
         deliverWobbleFour = drive.trajectoryBuilder(getWobbleFour.end())
                 .lineToConstantHeading(deliverWobbleFourV1)
                 .splineToConstantHeading(deliverWobbleFourV2, Math.toRadians(0.0))
                 .splineToConstantHeading(deliverWobbleFourV3, Math.toRadians(0.0))
+                .build();
+
+        endLineFour = drive.trajectoryBuilder(shootPosFour.end())
+                .lineToConstantHeading(fourLineV1)
                 .build();
 
         telemetry.addData(">", "Press Play to begin autonomous");
@@ -195,6 +225,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     sleep(1200);
 
                     elapsed = (System.currentTimeMillis() - start) / 1000.0;
+                    telemetry.addData("elapsed", elapsed);
+                    telemetry.update();
                     if(elapsed >= 29.0) {
                         drive.shooter.setPower(0.0);
                         // put arm down plz
@@ -205,6 +237,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                         sleep(250);
                         if(elapsed >= 29.0) {
                             drive.shooter.setPower(0.0);
+                            telemetry.addData("Put down arm now", "");
+                            telemetry.update();
                             // put arm down plz
                             break;
                         }
@@ -216,16 +250,9 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     drive.followTrajectory(endLineZero);
                     break;
                 case 1:
-                    drive.followTrajectory(one);
-                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
-                    sleep(400);
-                    drive.wobbleClaw.setPosition(wobbleClawOpen);
-                    sleep(300);
-                    moveWobbleArm(drive, 0.4, -wobbleArmDistance);
-
+//                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.followTrajectory(getWobbleOne);
-                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
-                    sleep(400);
+
                     drive.wobbleClaw.setPosition(wobbleClawClose);
                     sleep(600);
                     moveWobbleArm(drive, 0.4, -wobbleArmDistance);
@@ -236,31 +263,77 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     sleep(150);
                     moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
-                    drive.followTrajectory(returnToBaseline(deliverWobbleOne.end(), drive));
+                    drive.followTrajectory(shootPosOne);
+                    drive.turn(Math.toRadians(170.0));
+                    drive.shooter.setPower(shooterPower);
+                    sleep(1200);
+
+                    elapsed = (System.currentTimeMillis() - start) / 1000.0;
+                    telemetry.addData("elapsed", elapsed);
+                    telemetry.update();
+                    if(elapsed >= 29.0) {
+                        drive.shooter.setPower(0.0);
+                        // put arm down plz
+                    }
+                    // move servo back and forth fast
+                    for(int i = 0; i < 3; i++) {
+                        drive.flicker.setPosition(flickOpen);
+                        sleep(250);
+                        if(elapsed >= 29.0) {
+                            drive.shooter.setPower(0.0);
+                            telemetry.addData("Put down arm now", "");
+                            telemetry.update();
+                            // put arm down plz
+                            break;
+                        }
+                        drive.flicker.setPosition(flickClose);
+                        sleep(250);
+                    }
+                    drive.shooter.setPower(0.0);
+
+                    drive.followTrajectory(endLineOne);
                     break;
                 case 4:
+                    shooterPower = -0.65;
                     drive.followTrajectory(four);
-                    moveWobbleArm(drive, 0.4, 380);
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
                     sleep(150);
-                    moveWobbleArm(drive, 0.4, -380);
+                    moveWobbleArm(drive, 0.4, -(wobbleArmDistance / 2));
 
-                    drive.followTrajectory(getWobbleFour);
-                    drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, 380);
-                    sleep(150);
-                    drive.wobbleClaw.setPosition(wobbleClawClose);
-                    sleep(100);
-                    moveWobbleArm(drive, 0.4, -380);
+                    drive.followTrajectory(shootPosFour);
+                    drive.turn(Math.toRadians(170.0));
+                    drive.shooter.setPower(shooterPower);
+                    sleep(1200);
 
-                    drive.followTrajectory(deliverWobbleFour);
-                    drive.turn(Math.toRadians(180.0));
-                    moveWobbleArm(drive, 0.4, 380);
-                    drive.wobbleClaw.setPosition(wobbleClawOpen);
-                    sleep(150);
-                    moveWobbleArm(drive, 0.4, -380);
+                    elapsed = (System.currentTimeMillis() - start) / 1000.0;
+                    telemetry.addData("elapsed", elapsed);
+                    telemetry.update();
+                    if(elapsed >= 29.0) {
+                        drive.shooter.setPower(0.0);
+                        // put arm down plz
+                    }
+                    // move servo back and forth fast
+                    for(int i = 0; i < 3; i++) {
+                        drive.flicker.setPosition(flickOpen);
+                        sleep(250);
+                        if(elapsed >= 29.0) {
+                            drive.shooter.setPower(0.0);
+                            telemetry.addData("Put down arm now", "");
+                            telemetry.update();
+                            // put arm down plz
+                            break;
+                        }
+                        drive.flicker.setPosition(flickClose);
+                        drive.turn(Math.toRadians(-5.0));
+                        sleep(250);
+                    }
+                    drive.shooter.setPower(0.0);
 
-                    drive.followTrajectory(returnToBaseline(deliverWobbleFour.end(), drive));
+                    drive.followTrajectory(endLineFour);
+
+                    // left powershot: 62in from bottom, 55in from right, 10deg
+                    // 5deg increments
                     break;
                 default:
                     drive.followTrajectory(returnToBaseline(goToRings.end(), drive));

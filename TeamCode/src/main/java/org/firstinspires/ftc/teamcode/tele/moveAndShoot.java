@@ -29,7 +29,7 @@ public class moveAndShoot extends LinearOpMode {
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
 
-    public static double shooterPower = -0.62;
+    public static double shooterPower = -0.65;
 
     public ToggleBoolean flickState;
     public ToggleBoolean shootState;
@@ -98,6 +98,7 @@ public class moveAndShoot extends LinearOpMode {
             tbd.wobbleArm.setPower(b * 0.4);
 
             telemetry.addData("Motor position", tbd.wobbleArm.getCurrentPosition());
+            telemetry.addData("imu", tbd.imu.getAngularOrientation());
             telemetry.update();
         }
     }
