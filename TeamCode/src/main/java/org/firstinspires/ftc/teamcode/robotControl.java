@@ -41,6 +41,7 @@ public class robotControl {
 
     public Servo wobbleClaw;
     public Servo flicker;
+    public Servo lock;
 
     // Other
     public ElapsedTime timer = new ElapsedTime();
@@ -99,6 +100,7 @@ public class robotControl {
         // Servos: variable = hardwareMap.servo.get("name");
         wobbleClaw = hardwareMap.servo.get("wobbleClaw");
         flicker = hardwareMap.servo.get("flicker");
+        lock = hardwareMap.servo.get("lock");
     }
 
     public void moveDriveMotors(double power) {
@@ -183,12 +185,12 @@ public class robotControl {
                         telemetry.addData("Confidence", recognition.getConfidence());
                         if (recognition.getLabel().equals("Quad") && updatedRecognitions.size() >= 1) {
                             telemetry.addData("Detected", "4");
-                            if(recognition.getConfidence() >= 0.80 || i >= 15) {
+                            if(i >= 15 || recognition.getConfidence() >= 0.85) {
                                 result = 4;
                             }
-                        } else if (recognition.getLabel().equals("Single") && updatedRecognitions.size() == 1 && recognition.getConfidence() > 0.9) {
+                        } else if (recognition.getLabel().equals("Single") && updatedRecognitions.size() == 1) {
                             telemetry.addData("Detected", "1");
-                            if(recognition.getConfidence() >= 0.80 || i >= 15) {
+                            if(i >= 15 || recognition.getConfidence() >= 0.85) {
                                 result = 1;
                             }
                         }

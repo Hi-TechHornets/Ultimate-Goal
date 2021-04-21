@@ -47,19 +47,21 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
     public static int wobbleArmDistance = 420;
 
-    public static double shooterPower = -0.68;
+    public static double shooterPower = -0.7;
     public static double flickOpen = 0.85;
     public static double flickClose = 0.62;
+    public static double lockClose = 0.22;
+    public static double lockOpen = 0.6;
 
     public static Vector2d goToRingsV1         = new Vector2d(-23.0, -58.0);
     public static Vector2d zeroV1              = new Vector2d(9.0, -50.0);
     public static Vector2d oneV1               = new Vector2d(38.0, -43.0);
     public static Vector2d fourV1              = new Vector2d(19.0, -42.0);
     public static Vector2d fourV2              = new Vector2d(36.5, -55.0);
-    public static Vector2d fourV3              = new Vector2d(60.0, -49.0);
-    public static Vector2d getWobbleZeroV1     = new Vector2d(-47.0, -11.0);
+    public static Vector2d fourV3              = new Vector2d(58.0, -49.0);
+    public static Vector2d getWobbleZeroV1     = new Vector2d(-48.0, -12.5);
     public static Vector2d deliverWobbleZeroV1 = new Vector2d(14.0, -46.0);
-    public static Vector2d getWobbleOneV1      = new Vector2d(-48.0, -12.0);
+    public static Vector2d getWobbleOneV1      = new Vector2d(-48.0, -12.5);
     public static Vector2d deliverWobbleOneV1  = new Vector2d(35.0, -20.0);
     public static Vector2d oneLineV1           = new Vector2d(14.0, -20.0);
     public static Vector2d getWobbleFourV1     = new Vector2d(-50.0, -40.0);
@@ -70,7 +72,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
     public static Vector2d endLineV1 = new Vector2d(14.0, -39.0);
 
     public static Vector2d highGoalPos = new Vector2d(0.0, -39.0);
-    public static Vector2d powerShotPos = new Vector2d(-10.0, -17.0);
+    public static Vector2d powerShotPos = new Vector2d(0.0, -17.0);
 
     @Override
     public void runOpMode() {
@@ -79,6 +81,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
         drive.wobbleArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         drive.wobbleClaw.setPosition(wobbleClawClose);
+
+        drive.lock.setPosition(lockClose);
 
         initVuforia();
 
@@ -114,6 +118,9 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
         getWobbleZero = drive.trajectoryBuilder(new Pose2d(zero.end().getX(), zero.end().getY(), Math.toRadians(0.0)), Math.toRadians(90.0))
                 .splineToConstantHeading(getWobbleZeroV1, Math.toRadians(180.0))
+                .addTemporalMarker(1, () -> {
+                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
+                })
                 .build();
 
         deliverWobbleZero = drive.trajectoryBuilder(getWobbleZero.end())
@@ -132,7 +139,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
         getWobbleOne = drive.trajectoryBuilder(goToRings.end())
                 .addSpatialMarker(new Vector2d(37.0, -47.0), () -> {
-                    moveWobbleArm(drive, 0.4, (wobbleArmDistance / 2) + 40);
+                    moveWobbleArm(drive, 0.4, (wobbleArmDistance / 2) + 80);
                 })
                 .splineToConstantHeading(oneV1, Math.toRadians(90.0))
                 .addSpatialMarker(new Vector2d(38.0, -27.0), () -> {
@@ -205,8 +212,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(getWobbleZero);
-                    moveWobbleArm(drive, 0.4, wobbleArmDistance);
-                    sleep(300);
+
+//                    sleep(300);
                     drive.wobbleClaw.setPosition(wobbleClawClose);
                     sleep(500);
                     moveWobbleArm(drive, 0.4, -wobbleArmDistance);
@@ -264,6 +271,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     moveWobbleArm(drive, 0.4, -wobbleArmDistance);
 
                     drive.followTrajectory(shootPosOne);
+                    moveWobbleArm(drive, 0.4, 120);
                     drive.turn(Math.toRadians(170.0));
                     drive.shooter.setPower(shooterPower);
                     sleep(1200);
@@ -294,7 +302,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     drive.followTrajectory(endLineOne);
                     break;
                 case 4:
-                    shooterPower = -0.65;
+                    shooterPower = -0.63;
                     drive.followTrajectory(four);
                     moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);

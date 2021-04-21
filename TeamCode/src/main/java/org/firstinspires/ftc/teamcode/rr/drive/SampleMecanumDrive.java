@@ -80,7 +80,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     public  DcMotor wobbleArm, intake, shooter;
-    public Servo wobbleClaw, flicker;
+    public Servo wobbleClaw, flicker, lock;
     private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
@@ -128,10 +128,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
         flicker = hardwareMap.get(Servo.class, "flicker");
+        lock = hardwareMap.get(Servo.class, "lock");
 
         wobbleArm = hardwareMap.get(DcMotor.class, "wobbleArm");
         intake = hardwareMap.get(DcMotor.class, "intake");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
+
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

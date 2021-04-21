@@ -28,17 +28,21 @@ public class moveAndShoot extends LinearOpMode {
     public static double flickClose = 0.62;
     public static double wobbleClawOpen = 1.0;
     public static double wobbleClawClose = 0.0;
+    public static double lockClose = 0.22;
+    public static double lockOpen = 0.6;
 
     public static double shooterPower = -0.65;
 
     public ToggleBoolean flickState;
     public ToggleBoolean shootState;
     public ToggleBoolean clawState;
+    public ToggleBoolean lockState;
 
     public void runOpMode() {
         clawState = new ToggleBoolean();
         flickState = new ToggleBoolean();
         shootState = new ToggleBoolean();
+        lockState = new ToggleBoolean();
 
         tbd = new robotControl();
 
@@ -54,6 +58,8 @@ public class moveAndShoot extends LinearOpMode {
         tbd.wobbleClaw.setPosition(wobbleClawClose);
 
         tbd.flicker.setPosition(flickClose);
+
+        tbd.lock.setPosition(lockClose);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -93,7 +99,15 @@ public class moveAndShoot extends LinearOpMode {
                 tbd.shooter.setPower(0.0);
             }
 
-            tbd.intake.setPower(a);
+            if(lockState.output()) {
+                tbd.lock.setPosition(lockOpen);
+            }
+            else {
+                tbd.lock.setPosition(lockClose);
+            }
+
+
+            tbd.intake.setPower(a * 0.55);
 
             tbd.wobbleArm.setPower(b * 0.4);
 
@@ -124,5 +138,6 @@ public class moveAndShoot extends LinearOpMode {
 
         flickState.input(gamepad2.a);
         shootState.input(gamepad2.b);
+        lockState.input(gamepad2.y);
     }
 }
