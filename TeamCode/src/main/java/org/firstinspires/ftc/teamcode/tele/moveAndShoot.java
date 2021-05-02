@@ -59,7 +59,7 @@ public class moveAndShoot extends LinearOpMode {
 
         tbd.flicker.setPosition(flickClose);
 
-        tbd.lock.setPosition(lockClose);
+        tbd.lock.setPosition(lockOpen);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -100,10 +100,10 @@ public class moveAndShoot extends LinearOpMode {
             }
 
             if(lockState.output()) {
-                tbd.lock.setPosition(lockOpen);
+                tbd.lock.setPosition(lockClose);
             }
             else {
-                tbd.lock.setPosition(lockClose);
+                tbd.lock.setPosition(lockOpen);
             }
 
 

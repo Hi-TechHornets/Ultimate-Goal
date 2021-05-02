@@ -47,7 +47,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
     public static int wobbleArmDistance = 420;
 
-    public static double shooterPower = -0.7;
+    public static double shooterPower = -0.65;
     public static double flickOpen = 0.85;
     public static double flickClose = 0.62;
     public static double lockClose = 0.22;
@@ -160,7 +160,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                 .build();
 
         endLineOne = drive.trajectoryBuilder(new Pose2d(shootPosOne.end().getX(), shootPosOne.end().getY(), Math.toRadians(170.0)))
-                .lineToConstantHeading(oneLineV1)
+                .lineToConstantHeading(endLineV1)
                 .build();
 
 
@@ -227,7 +227,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     drive.followTrajectory(shootPosZero);
                     // shoot
                     // prime shooting wheel
-                    drive.turn(Math.toRadians(170.0));
+                    drive.turn(Math.toRadians(168.0));
                     drive.shooter.setPower(shooterPower);
                     sleep(1200);
 
@@ -272,7 +272,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
 
                     drive.followTrajectory(shootPosOne);
                     moveWobbleArm(drive, 0.4, 120);
-                    drive.turn(Math.toRadians(170.0));
+                    drive.turn(Math.toRadians(168.0));
                     drive.shooter.setPower(shooterPower);
                     sleep(1200);
 
@@ -302,7 +302,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     drive.followTrajectory(endLineOne);
                     break;
                 case 4:
-                    shooterPower = -0.63;
+                    shooterPower = -0.61;
                     drive.followTrajectory(four);
                     moveWobbleArm(drive, 0.4, wobbleArmDistance);
                     drive.wobbleClaw.setPosition(wobbleClawOpen);
@@ -310,7 +310,7 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                     moveWobbleArm(drive, 0.4, -(wobbleArmDistance / 2));
 
                     drive.followTrajectory(shootPosFour);
-                    drive.turn(Math.toRadians(170.0));
+                    drive.turn(Math.toRadians(180.0));
                     drive.shooter.setPower(shooterPower);
                     sleep(1200);
 
@@ -333,8 +333,8 @@ public class twoWobbleAutoTesting extends LinearOpMode {
                             break;
                         }
                         drive.flicker.setPosition(flickClose);
-                        drive.turn(Math.toRadians(-5.0));
-                        sleep(250);
+                        drive.turn(Math.toRadians(-7.0));
+                        sleep(750);
                     }
                     drive.shooter.setPower(0.0);
 
